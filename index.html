@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Photo & Video Editing</title>
+<style>
+:root{--bg:#090D18;--panel:#111B2E;--pri:#00D9FF;--sec:#9B5CFF;--tx:#E8EEF9;--mu:#8A97B2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Inter,system-ui,sans-serif;line-height:1.6}
+nav{justify-content:center;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;gap:6px;align-items:center;padding:12px 20px;background:rgba(9,13,24,.85);backdrop-filter:blur(10px);overflow-x:auto}
+nav b{margin-right:auto;white-space:nowrap;background:linear-gradient(90deg,var(--pri),var(--sec));-webkit-background-clip:text;color:transparent}
+nav a{color:var(--mu);text-decoration:none;font-size:14px;padding:6px 12px;border-radius:20px;white-space:nowrap}
+nav a:hover{color:var(--pri)}
+header{text-align:center;padding:70px 20px 40px}
+h1{font-size:clamp(32px,6vw,56px);margin:0 0 12px;line-height:1.1}
+h1 span{background:linear-gradient(90deg,var(--pri),var(--sec));-webkit-background-clip:text;color:transparent}
+header p{color:var(--mu);max-width:560px;margin:0 auto}
+section{max-width:980px;margin:0 auto;padding:40px 20px}
+.tag{color:var(--sec);font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+h2{margin:4px 0 8px;font-size:28px}
+.card{background:var(--panel);border:1px solid #1d2b47;border-radius:18px;padding:22px;margin-top:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;padding:0;list-style:none}
+.chips li{font-size:13px;padding:5px 12px;border-radius:20px;border:1px solid #24365a;color:var(--mu)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:720px){.row{grid-template-columns:1fr}}
+.stage{background:#000;border-radius:12px;min-height:200px;display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--mu);font-size:14px}
+.stage canvas,.stage video{max-width:100%;max-height:340px;display:block}
+label{display:block;font-size:13px;color:var(--mu);margin-top:10px}
+input[type=range]{width:100%;accent-color:var(--pri)}
+button,.btn{background:var(--pri);color:#041018;border:0;border-radius:10px;padding:9px 16px;font-weight:600;cursor:pointer;font-size:14px;margin:8px 8px 0 0;display:inline-block}
+button.alt,.btn.alt{background:var(--sec);color:#fff}
+button.ghost{background:transparent;border:1px solid #24365a;color:var(--tx)}
+input[type=file]{display:none}
+#pst canvas,#sgs canvas{background:repeating-conic-gradient(#1a1f2e 0 25%,#232a3d 0 50%) 0 0/16px 16px}
+#presets{display:flex;flex-wrap:wrap}#presets button{padding:6px 12px;font-size:13px;margin:6px 6px 0 0}
+#presets .on{border-color:var(--pri);color:var(--pri)}
+#tool{margin-top:8px;padding:10px;border:1px dashed #24365a;border-radius:12px}
+.out{font-size:13px;color:var(--mu);margin-top:8px;min-height:20px}
+.ai{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:14px}
+.ai .card{margin:0}
+select,input[type=text],input[type=number]{background:#0c1424;color:var(--tx);border:1px solid #24365a;border-radius:8px;padding:7px 10px;font-size:14px;width:100%}
+.lane{display:flex;align-items:center;gap:10px;margin-top:8px}.lane span{width:48px;font-size:12px;color:var(--mu)}
+.trk{flex:1;display:flex;position:relative;height:38px;background:#0c1424;border-radius:8px;overflow:hidden}
+.blk{height:100%;padding:0 8px;font-size:12px;line-height:38px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;border-right:2px solid var(--bg);color:#041018}
+.blk.v{background:var(--pri)}.blk.a{background:var(--sec);color:#fff}.blk.sel{outline:2px solid #fff;outline-offset:-2px}
+.ph{position:absolute;top:0;bottom:0;width:2px;background:#fff;left:0;pointer-events:none}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.pre{display:flex;flex-wrap:wrap}.pre button{padding:6px 12px;font-size:13px;margin:6px 6px 0 0}.pre .on{border-color:var(--pri);color:var(--pri)}
+footer{text-align:center;color:var(--mu);font-size:13px;padding:40px}
+</style></head><body>
+<nav><a href="#photo">Photo</a><a href="#video">Video</a><a href="#grade">Colour</a></nav>
+<section id="photo"><h2>Photo Editor</h2>
+
+<div class="card row"><div><div class="stage" id="pst">Load a photo to begin</div></div>
+<div><label class="btn" for="pf">Choose photo</label><input id="pf" type="file" accept="image/*">
+<label>Brightness <input type="range" id="pb" min="50" max="150" value="100"></label>
+<label>Contrast <input type="range" id="pc" min="50" max="150" value="100"></label>
+<label>Saturation <input type="range" id="ps" min="0" max="200" value="100"></label>
+<label>Crop (keep centre) <input type="range" id="pk" min="30" max="100" value="100"></label>
+<label>Resize (%) <input type="range" id="pz" min="20" max="100" value="100"></label>
+<label>Filters & presets</label><div id="presets"><button class="ghost on" data-p="none">Original</button><button class="ghost" data-p="bw">B&W</button><button class="ghost" data-p="sepia">Sepia</button><button class="ghost" data-p="vivid">Vivid</button><button class="ghost" data-p="fade">Fade</button><button class="ghost" data-p="cool">Cool</button><button class="ghost" data-p="warm">Warm</button></div>
+<label>AI tools</label><button id="tenh">Enhance image</button><button class="alt" id="tbg">Remove background</button><button class="alt" id="tob">Remove object</button>
+<div id="tool" hidden><label id="tl1">Tolerance <input type="range" id="ptl" min="10" max="120" value="45"></label><label id="tl2">Brush size <input type="range" id="pbr" min="5" max="60" value="25"></label><button id="tapply">Apply</button><button class="ghost" id="tcancel">Cancel</button></div>
+<div class="out" id="pmsg"></div>
+<button class="alt" id="rot">Rotate 90°</button><button class="ghost" id="rst">Reset</button><button id="psave">Download</button></div></div></section>
+
+<section id="video"><h2>Video Editor</h2>
+
+<div class="card"><label class="btn" for="vf">Import video or audio</label><input id="vf" type="file" accept="video/*,audio/*" multiple>
+<div class="stage" id="vst" style="margin-top:14px">Import clips to begin</div>
+<div id="tl"></div>
+<div id="cp" hidden style="margin-top:14px"><b id="cn"></b><div class="row"><div>
+<label>Trim start <input type="range" id="ta" min="0" max="10" step="0.1" value="0"></label>
+<label>Trim end <input type="range" id="tb" min="0" max="10" step="0.1" value="10"></label>
+<label>Split at (% of trimmed clip) <input type="range" id="spl" min="10" max="90" value="50"></label>
+<button class="alt" id="bsp">Split clip</button><button class="ghost" id="bl">◀ Move</button><button class="ghost" id="br">Move ▶</button><button class="ghost" id="bd">Remove</button></div>
+<div><label>Speed <input type="range" id="csp" min="0.25" max="2" step="0.25" value="1"></label>
+<label>Volume (audio mixing) <input type="range" id="cvol" min="0" max="1" step="0.05" value="1"></label></div></div></div>
+<div class="row" style="margin-top:14px"><div><label>Transition <select id="tr"><option value="none">None</option><option value="fade">Fade in</option><option value="wipe">Wipe</option><option value="zoom">Zoom</option></select></label>
+<label>Effect <select id="fx"><option value="none">None</option><option value="bw">Black & white</option><option value="sepia">Sepia</option><option value="vivid">Vivid</option><option value="blur">Blur</option></select></label></div>
+<div><label>Text / subtitle <input type="text" id="ct" placeholder="Type your caption"></label>
+<div class="row" style="gap:8px"><label>Start (s) <input type="number" id="cs" value="0" min="0"></label><label>Length (s) <input type="number" id="cd" value="3" min="1"></label></div>
+<button id="cadd">Add text</button><div id="cl" class="pre"></div></div></div>
+<button id="vplay">Play</button><button class="ghost" id="vstop">Stop</button><button class="alt" id="vexp">Export video</button>
+<div class="out" id="vout"></div></div></section>
+
+<section id="grade"><h2>Cinematic Colour Grading</h2>
+
+<div class="card row"><div><div class="stage" id="gst">Load an image to grade</div></div>
+<div><label class="btn" for="gf">Choose image</label><input id="gf" type="file" accept="image/*">
+<label>Exposure <input type="range" id="ge" min="-50" max="50" value="0"></label>
+<label>Temperature (cool ↔ warm) <input type="range" id="gt" min="-50" max="50" value="0"></label>
+<label>Tint (green ↔ magenta) <input type="range" id="gn" min="-50" max="50" value="0"></label>
+<button class="alt" id="gwb">Auto white balance</button>
+<label>Highlights <input type="range" id="gh" min="-50" max="50" value="0"></label>
+<label>Shadows <input type="range" id="gsh" min="-50" max="50" value="0"></label>
+<label>LUT-inspired presets</label><div class="pre" id="luts"><button class="ghost on" data-p="none">None</button><button class="ghost" data-p="bleach">Bleach</button><button class="ghost" data-p="vintage">Vintage</button><button class="ghost" data-p="noir">Noir</button><button class="ghost" data-p="golden">Golden hour</button><button class="ghost" data-p="cold">Cold</button></div>
+<label>Cinematic colour combination (shadows / highlights)</label><div class="pre" id="combos"><button class="ghost on" data-p="none">None</button><button class="ghost" data-p="teal">Teal + Orange</button><button class="ghost" data-p="purple">Purple + Gold</button><button class="ghost" data-p="blue">Blue + Amber</button><button class="ghost" data-p="green">Green + Magenta</button></div>
+<label>Combination strength <input type="range" id="gk" min="0" max="100" value="50"></label>
+<button class="ghost" id="grs">Reset</button><button id="gsave">Download</button></div></div></section>
+
+<script>
+const $=id=>document.getElementById(id);
+function loadImg(file,cb){const i=new Image();i.onload=()=>cb(i);i.src=URL.createObjectURL(file)}
+// Photo
+let pimg=null,rot=0;const pc=document.createElement('canvas');$('pst').textContent='Load a photo to begin';
+function drawPhoto(){if(!pimg)return;const k=$('pk').value/100,z=$('pz').value/100;
+const sw=pimg.width*k,sh=pimg.height*k,sx=(pimg.width-sw)/2,sy=(pimg.height-sh)/2;
+const w=sw*z,h=sh*z,r=rot%2;pc.width=r?h:w;pc.height=r?w:h;const x=pc.getContext('2d');
+x.filter=`brightness(${$('pb').value}%) contrast(${$('pc').value}%) saturate(${$('ps').value}%) `+PRE[curPre];
+x.save();x.translate(pc.width/2,pc.height/2);x.rotate(rot*Math.PI/2);x.drawImage(pimg,sx,sy,sw,sh,-w/2,-h/2,w,h);x.restore()}
+$('pf').onchange=e=>loadImg(e.target.files[0],i=>{orig=i;setSrc(i);rot=0;mode=null;$('tool').hidden=true;$('pst').innerHTML='';$('pst').append(pc);drawPhoto()});
+['pb','pc','ps','pk','pz'].forEach(i=>$(i).oninput=drawPhoto);
+$('rot').onclick=()=>{rot=(rot+1)%4;drawPhoto()};
+$('rst').onclick=()=>{[['pb',100],['pc',100],['ps',100],['pk',100],['pz',100]].forEach(([i,v])=>$(i).value=v);rot=0;curPre='none';document.querySelectorAll('#presets button').forEach(o=>o.classList.toggle('on',o.dataset.p=='none'));if(orig)setSrc(orig);if(mode)endTool();else drawPhoto()};
+function save(c,n){if(!c.width)return;const a=document.createElement('a');a.download=n;a.href=c.toDataURL('image/png');a.click()}
+$('psave').onclick=()=>save(pc,'photo.png');
+// Photo tools
+let orig=null,mode=null,mask=null,down=false,curPre='none';const ec=document.createElement('canvas');
+const PRE={none:'',bw:'grayscale(1)',sepia:'sepia(.8)',vivid:'saturate(1.5) contrast(1.1)',fade:'contrast(.85) brightness(1.1) saturate(.8)',cool:'hue-rotate(15deg) saturate(1.1)',warm:'sepia(.35) saturate(1.2)'};
+function setSrc(i){const m=Math.min(1,1400/Math.max(i.width,i.height));pimg=document.createElement('canvas');pimg.width=Math.round(i.width*m);pimg.height=Math.round(i.height*m);pimg.getContext('2d').drawImage(i,0,0,pimg.width,pimg.height);if(mode)endTool();else drawPhoto()}
+document.querySelectorAll('#presets button').forEach(b=>b.onclick=()=>{curPre=b.dataset.p;document.querySelectorAll('#presets button').forEach(o=>o.classList.toggle('on',o==b));drawPhoto()});
+function show(c){$('pst').innerHTML='';$('pst').append(c)}
+function startTool(m){if(!pimg){$('pmsg').textContent='Load a photo first.';return}if(mode)endTool();mode=m;$('tool').hidden=false;
+$('tl1').style.display=m=='bg'?'block':'none';$('tl2').style.display=m=='ob'?'block':'none';$('tapply').style.display=m=='ob'?'inline-block':'none';
+ec.width=pimg.width;ec.height=pimg.height;mask=new Uint8Array(pimg.width*pimg.height);ec.getContext('2d').drawImage(pimg,0,0);show(ec);
+$('pmsg').textContent=m=='bg'?'Click the background colour you want to remove.':'Paint over the object, then press Apply.'}
+function endTool(){mode=null;$('tool').hidden=true;$('pmsg').textContent='';show(pc);drawPhoto()}
+ec.style.touchAction='none';ec.style.cursor='crosshair';
+function pt(e){const r=ec.getBoundingClientRect();return[Math.floor((e.clientX-r.left)*ec.width/r.width),Math.floor((e.clientY-r.top)*ec.height/r.height)]}
+function brush(X,Y){const w=ec.width,h=ec.height,R=+$('pbr').value*w/ec.getBoundingClientRect().width,x=ec.getContext('2d');x.fillStyle='rgba(255,60,60,.6)';x.beginPath();x.arc(X,Y,R,0,7);x.fill();
+for(let y=Math.max(0,Math.floor(Y-R));y<Math.min(h,Y+R);y++)for(let u=Math.max(0,Math.floor(X-R));u<Math.min(w,X+R);u++)if((u-X)**2+(y-Y)**2<=R*R)mask[y*w+u]=1}
+ec.onpointerdown=e=>{if(!mode)return;const[X,Y]=pt(e);if(mode=='bg'){bgRemove(X,Y,+$('ptl').value);endTool();return}down=true;brush(X,Y)};
+ec.onpointermove=e=>{if(down&&mode=='ob'){const[X,Y]=pt(e);brush(X,Y)}};
+addEventListener('pointerup',()=>down=false);
+$('tbg').onclick=()=>startTool('bg');$('tob').onclick=()=>startTool('ob');
+$('tapply').onclick=()=>{inpaint(mask);endTool()};$('tcancel').onclick=endTool;
+$('tenh').onclick=()=>{if(!pimg){$('pmsg').textContent='Load a photo first.';return}if(mode)endTool();enhance();$('pmsg').textContent='Enhanced: levels stretched and sharpened.'};
+function bgRemove(px,py,tol){const w=pimg.width,h=pimg.height,x=pimg.getContext('2d'),im=x.getImageData(0,0,w,h),d=im.data,i0=(py*w+px)*4,r=d[i0],g=d[i0+1],b=d[i0+2],seen=new Uint8Array(w*h),st=[py*w+px];seen[st[0]]=1;
+while(st.length){const p=st.pop(),i=p*4;if(Math.hypot(d[i]-r,d[i+1]-g,d[i+2]-b)>tol)continue;d[i+3]=0;const X=p%w,Y=(p/w)|0;
+if(X>0&&!seen[p-1]){seen[p-1]=1;st.push(p-1)}if(X<w-1&&!seen[p+1]){seen[p+1]=1;st.push(p+1)}if(Y>0&&!seen[p-w]){seen[p-w]=1;st.push(p-w)}if(Y<h-1&&!seen[p+w]){seen[p+w]=1;st.push(p+w)}}
+x.putImageData(im,0,0)}
+function inpaint(m){const w=pimg.width,h=pimg.height,x=pimg.getContext('2d'),im=x.getImageData(0,0,w,h),d=im.data,k=new Uint8Array(w*h);let left=0;
+for(let i=0;i<w*h;i++){k[i]=m[i]?0:1;if(m[i])left++}
+while(left>0){const nk=k.slice();let prog=0;
+for(let y=0;y<h;y++)for(let u=0;u<w;u++){const p=y*w+u;if(k[p])continue;let r=0,g=0,b=0,c=0;
+for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=u+dx,Y=y+dy;if(X<0||Y<0||X>=w||Y>=h)continue;const q=Y*w+X;if(k[q]){r+=d[q*4];g+=d[q*4+1];b+=d[q*4+2];c++}}
+if(c){d[p*4]=r/c;d[p*4+1]=g/c;d[p*4+2]=b/c;d[p*4+3]=255;nk[p]=1;left--;prog++}}
+k.set(nk);if(!prog)break}
+x.putImageData(im,0,0)}
+function enhance(){const w=pimg.width,h=pimg.height,x=pimg.getContext('2d'),im=x.getImageData(0,0,w,h),d=im.data,hist=new Uint32Array(256);
+for(let i=0;i<d.length;i+=4)hist[((d[i]+d[i+1]+d[i+2])/3)|0]++;
+const n=w*h;let lo=0,hi=255,a=0;while(lo<254&&(a+=hist[lo])<n*.01)lo++;a=0;while(hi>1&&(a+=hist[hi])<n*.01)hi--;const s=255/Math.max(1,hi-lo);
+for(let i=0;i<d.length;i+=4)for(let c=0;c<3;c++)d[i+c]=Math.max(0,Math.min(255,(d[i+c]-lo)*s));
+const o=d.slice();for(let y=1;y<h-1;y++)for(let u=1;u<w-1;u++){const i=(y*w+u)*4;for(let c=0;c<3;c++){const v=o[i+c]+.5*(4*o[i+c]-o[i-4+c]-o[i+4+c]-o[i-w*4+c]-o[i+w*4+c]);d[i+c]=Math.max(0,Math.min(255,v))}}
+x.putImageData(im,0,0);drawPhoto()}
+// Grade
+let gimg=null,lut='none',cmb='none';const gc=document.createElement('canvas');
+const LUT={none:null,bleach:(r,g,b)=>{const l=.3*r+.59*g+.11*b;return[r,g,b].map(v=>((v+l)/2-128)*1.25+128)},vintage:(r,g,b)=>[r*.9+30,g*.85+22,b*.7+35].map(v=>v*.88+20),noir:(r,g,b)=>{const l=(.3*r+.59*g+.11*b-128)*1.3+128;return[l,l,l]},golden:(r,g,b)=>[r*1.1+10,g*1.03,b*.82],cold:(r,g,b)=>[r*.88,g,b*1.15+10]};
+const CMB={none:null,teal:[[0,95,115],[255,150,70]],purple:[[80,40,140],[255,200,90]],blue:[[20,60,150],[255,170,60]],green:[[20,110,80],[240,90,160]]};
+function drawGrade(){if(!gimg)return;const m=Math.min(1,900/gimg.width);gc.width=gimg.width*m;gc.height=gimg.height*m;const x=gc.getContext('2d');
+x.drawImage(gimg,0,0,gc.width,gc.height);const im=x.getImageData(0,0,gc.width,gc.height),d=im.data;
+const e=1+$('ge').value/100,t=$('gt').value*1.2,n=$('gn').value*1.2,h=$('gh').value/100,s=$('gsh').value/100,f=LUT[lut],cb=CMB[cmb],k=$('gk').value/100*.5;
+for(let i=0;i<d.length;i+=4){let r=d[i]*e+t,g=d[i+1]*e-n,b=d[i+2]*e-t;const l=(r+g+b)/3/255;
+const a=h*Math.max(0,l-.5)*2*80+s*Math.max(0,.5-l)*2*80;r+=a;g+=a;b+=a;
+if(f){const o=f(r,g,b);r=o[0];g=o[1];b=o[2]}
+if(cb){const L=Math.max(0,Math.min(1,(.3*r+.59*g+.11*b)/255)),sh=(1-L)*(1-L)*k,hi=L*L*k;r+=(cb[0][0]-r)*sh+(cb[1][0]-r)*hi;g+=(cb[0][1]-g)*sh+(cb[1][1]-g)*hi;b+=(cb[0][2]-b)*sh+(cb[1][2]-b)*hi}
+d[i]=r;d[i+1]=g;d[i+2]=b}
+x.putImageData(im,0,0)}
+$('gf').onchange=e=>loadImg(e.target.files[0],i=>{gimg=i;$('gst').innerHTML='';$('gst').append(gc);drawGrade()});
+['ge','gt','gn','gh','gsh','gk'].forEach(i=>$(i).oninput=drawGrade);
+function mark(sel,b){document.querySelectorAll(sel+' button').forEach(o=>o.classList.toggle('on',o===b))}
+document.querySelectorAll('#luts button').forEach(b=>b.onclick=()=>{lut=b.dataset.p;mark('#luts',b);drawGrade()});
+document.querySelectorAll('#combos button').forEach(b=>b.onclick=()=>{cmb=b.dataset.p;mark('#combos',b);drawGrade()});
+$('gwb').onclick=()=>{if(!gimg)return;const t=document.createElement('canvas');t.width=t.height=32;const x=t.getContext('2d');x.drawImage(gimg,0,0,32,32);const d=x.getImageData(0,0,32,32).data;let R=0,G=0,B=0;
+for(let i=0;i<d.length;i+=4){R+=d[i];G+=d[i+1];B+=d[i+2]}R/=1024;G/=1024;B/=1024;const cl=v=>Math.max(-50,Math.min(50,Math.round(v)));
+$('gt').value=cl((B-R)/2/1.2);$('gn').value=cl((G-(R+B)/2)/1.2);drawGrade()};
+$('grs').onclick=()=>{['ge','gt','gn','gh','gsh'].forEach(i=>$(i).value=0);$('gk').value=50;lut=cmb='none';mark('#luts',document.querySelector('#luts button'));mark('#combos',document.querySelector('#combos button'));drawGrade()};
+$('gsave').onclick=()=>save(gc,'graded.png');
+// Video
+const clips=[],caps=[];let sel=null,ac=null,dst=null,playing=false,t0=0,raf=0,S0=null,rec=null;
+const cv=document.createElement('canvas');cv.width=960;cv.height=540;const cx=cv.getContext('2d');
+const FX={none:'none',bw:'grayscale(1)',sepia:'sepia(.8)',vivid:'saturate(1.6) contrast(1.1)',blur:'blur(4px)'};
+const esc=q=>q.replace(/[&<>"]/g,c=>'&#'+c.charCodeAt(0)+';'),dur=c=>(c.b-c.a)/c.sp;
+function audioCtx(){if(!ac){ac=new(window.AudioContext||window.webkitAudioContext)();dst=ac.createMediaStreamDestination()}return ac}
+$('vf').onchange=async e=>{audioCtx();for(const f of e.target.files){const k=f.type.startsWith('audio')?'a':'v',el=document.createElement(k=='a'?'audio':'video');el.src=URL.createObjectURL(f);el.preload='auto';el.playsInline=true;
+await new Promise(r=>{el.onloadedmetadata=r;el.onerror=r});const m={el,g:ac.createGain()};
+try{ac.createMediaElementSource(el).connect(m.g);m.g.connect(ac.destination);m.g.connect(dst)}catch(x){}
+const c={m,name:f.name,k,a:0,b:isFinite(el.duration)?el.duration:10,sp:1,vol:1};clips.push(c);sel=c}
+e.target.value='';draw()};
+function sched(){const o={v:[],a:[],T:0};['v','a'].forEach(k=>{let t=0;clips.filter(c=>c.k==k).forEach(c=>{o[k].push({c,s:t,e:t+dur(c)});t+=dur(c)});o.T=Math.max(o.T,t)});return o}
+function draw(){const S=sched();if(clips.length&&!cv.parentNode){$('vst').innerHTML='';$('vst').append(cv);cx.fillStyle='#000';cx.fillRect(0,0,960,540)}
+$('tl').innerHTML=['v','a'].map(k=>`<div class="lane"><span>${k=='v'?'Video':'Audio'}</span><div class="trk">${S[k].map(o=>`<div class="blk ${k} ${o.c===sel?'sel':''}" data-i="${clips.indexOf(o.c)}" style="width:${Math.max(4,dur(o.c)/S.T*100)}%">${esc(o.c.name)}</div>`).join('')}<i class="ph"></i></div></div>`).join('');
+$('cp').hidden=!sel;if(sel){const d=sel.m.el.duration||10;$('cn').textContent=sel.name+' · '+dur(sel).toFixed(1)+'s';['ta','tb'].forEach(i=>{$(i).max=d});$('ta').value=sel.a;$('tb').value=sel.b;$('csp').value=sel.sp;$('cvol').value=sel.vol}}
+$('tl').onclick=e=>{const b=e.target.closest('.blk');if(b){sel=clips[+b.dataset.i];draw()}};
+$('ta').oninput=()=>{if(sel){sel.a=Math.min(+$('ta').value,sel.b-.1);draw()}};
+$('tb').oninput=()=>{if(sel){sel.b=Math.max(+$('tb').value,sel.a+.1);draw()}};
+$('csp').oninput=()=>{if(sel){sel.sp=+$('csp').value;draw()}};$('cvol').oninput=()=>{if(sel)sel.vol=+$('cvol').value};
+$('bsp').onclick=()=>{if(!sel)return;const p=sel.a+(sel.b-sel.a)*$('spl').value/100,n={...sel,a:p};sel.b=p;clips.splice(clips.indexOf(sel)+1,0,n);draw()};
+$('bd').onclick=()=>{if(!sel)return;clips.splice(clips.indexOf(sel),1);sel=clips[0]||null;draw()};
+function mv(d){if(!sel)return;let i=clips.indexOf(sel),j=i+d;while(clips[j]&&clips[j].k!=sel.k)j+=d;if(clips[j]){[clips[i],clips[j]]=[clips[j],clips[i]];draw()}}
+$('bl').onclick=()=>mv(-1);$('br').onclick=()=>mv(1);
+function renderCaps(){$('cl').innerHTML=caps.map((c,i)=>`<button class="ghost" data-i="${i}">${esc(c.t)} · ${c.s}s ✕</button>`).join('')}
+$('cadd').onclick=()=>{const t=$('ct').value.trim();if(!t)return;caps.push({t,s:+$('cs').value||0,d:+$('cd').value||3});$('ct').value='';renderCaps()};
+$('cl').onclick=e=>{const b=e.target.closest('button');if(b){caps.splice(+b.dataset.i,1);renderCaps()}};
+function frame(){if(!playing)return;const S=S0,t=(performance.now()-t0)/1000;if(t>=S.T){endPlay(true);return}
+let cur=null;for(const k of['v','a'])for(const o of S[k]){const el=o.c.m.el;
+if(t>=o.s&&t<o.e){if(!o.on){o.on=1;el.currentTime=o.c.a+(t-o.s)*o.c.sp;el.playbackRate=o.c.sp;o.c.m.g.gain.value=o.c.vol;el.play().catch(()=>{})}if(k=='v')cur=o}else if(o.on){o.on=0;el.pause()}}
+cx.fillStyle='#000';cx.fillRect(0,0,960,540);
+if(cur){const el=cur.c.m.el,P=Math.min(1,(t-cur.s)/.7),tr=$('tr').value,w=el.videoWidth||960,h=el.videoHeight||540,z=Math.min(960/w,540/h);cx.save();cx.filter=FX[$('fx').value];
+if(tr=='fade')cx.globalAlpha=P;if(tr=='wipe'){cx.beginPath();cx.rect(0,0,960*P,540);cx.clip()}
+if(tr=='zoom'){const q=1.3-.3*P;cx.translate(480,270);cx.scale(q,q);cx.translate(-480,-270)}
+cx.drawImage(el,(960-w*z)/2,(540-h*z)/2,w*z,h*z);cx.restore()}
+caps.forEach(c=>{if(t>=c.s&&t<c.s+c.d){cx.font='600 36px sans-serif';cx.textAlign='center';cx.lineWidth=6;cx.strokeStyle='#000';cx.fillStyle='#fff';cx.strokeText(c.t,480,500);cx.fillText(c.t,480,500)}});
+document.querySelectorAll('.ph').forEach(p=>p.style.left=t/S.T*100+'%');raf=requestAnimationFrame(frame)}
+function startPlay(){audioCtx().resume();S0=sched();if(!S0.T){$('vout').textContent='Import a clip first.';return false}haltPlay();playing=true;t0=performance.now();draw();frame();return true}
+function haltPlay(){playing=false;cancelAnimationFrame(raf);clips.forEach(c=>c.m.el.pause())}
+function endPlay(done){haltPlay();if(rec){const r=rec;rec=null;r.stop()}else if(done)$('vout').textContent='Finished.'}
+$('vplay').onclick=startPlay;$('vstop').onclick=()=>endPlay();
+$('vexp').onclick=()=>{if(!window.MediaRecorder){$('vout').textContent='Export is not supported in this browser.';return}
+if(!startPlay())return;const st=cv.captureStream(30);dst.stream.getAudioTracks().forEach(t=>st.addTrack(t));const ch=[];rec=new MediaRecorder(st);rec.ondataavailable=e=>ch.push(e.data);
+rec.onstop=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(ch,{type:'video/webm'}));a.download='edited.webm';a.click();$('vout').textContent='Done: edited.webm downloaded.'};
+rec.start();$('vout').textContent='Exporting in real time, keep this tab open…'};
+</script></body></html>
